@@ -31,12 +31,10 @@ rf_model <- function(LABEL = '',
   ex_rf = explain(f_rf, data = all_data[,-1], y = target)
   vimp = variable_importance(ex_rf) 
   
-  rf_model =list(model = f_rf,
-                 data  = all_data,
-                 explain = ex_rf,
-                 importance = vimp,
-                 coefficients = RF_results,
-                 predictors = colnames(inputs))
-  
-  return(rf_model)
+  return(list(model = f_rf,
+              data  = all_data,
+              explain = ex_rf,
+              importance = vimp,
+              coefficients = RF_results,
+              predictors = colnames(inputs)))
 }
