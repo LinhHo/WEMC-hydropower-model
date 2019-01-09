@@ -20,21 +20,21 @@ ENTSOE_sel <- ENTSOE_gen_new %>% filter(between(as.Date(Date),ID_START, ID_END))
 
 ## Get Generation data hourly from ENTSOE for renewable energy ------
 
-# load(file.path(PATH_OUTPUT, 'ENTSOE_generation_hourly_2015_2018.rda'))
-# ENTSOE_gen_renewable_hourly <- ENTSOE_generation_hourly %>%
-#   mutate(EnergyType=ProductionType ) %>%
-#   mutate(TS=as.POSIXct(paste(Date,Time), tz="", format="%Y-%m-%d %H:%M:%OS")) %>%
-#   select(-ProductionType, -Pumping, -Year, -Month, -Day) %>%  
-#   spread(EnergyType, Generation) %>%
-#   select(TS, Country,
-#          WON='Wind Onshore ',
-#          WOF='Wind Offshore ',
-#          HRE='Hydro Water Reservoir ',
-#          HRO='Hydro Run-of-river and poundage ',
-#          SOL='Solar ') %>%
-#   gather(key='EnergyType', value=Generation, -TS, -Country)
-# print(unique(ENTSOE_gen$Country)) # 31 countries
-# save(ENTSOE_gen_renewable_hourly, file = file.path(PATH_OUTPUT, 'ENTSOE_generation_renewable_hourly_2015_2018.rda'))
+load(file.path(PATH_OUTPUT, 'ENTSOE_generation_hourly_2015_2018.rda'))
+ENTSOE_gen_renewable_hourly <- ENTSOE_generation_hourly %>%
+  mutate(EnergyType=ProductionType ) %>%
+  mutate(TS=as.POSIXct(paste(Date,Time), tz="", format="%Y-%m-%d %H:%M:%OS")) %>%
+  select(-ProductionType, -Pumping, -Year, -Month, -Day) %>%
+  spread(EnergyType, Generation) %>%
+  select(TS, Country,
+         WON='Wind Onshore ',
+         WOF='Wind Offshore ',
+         HRE='Hydro Water Reservoir ',
+         HRO='Hydro Run-of-river and poundage ',
+         SOL='Solar ') %>%
+  gather(key='EnergyType', value=Generation, -TS, -Country)
+print(unique(ENTSOE_gen$Country)) # 31 countries
+save(ENTSOE_gen_renewable_hourly, file = file.path(PATH_OUTPUT, 'ENTSOE_generation_renewable_hourly_2015_2018.rda'))
 load(file.path(PATH_OUTPUT, 'ENTSOE_generation_renewable_hourly_2015_2018.rda')) # my file shortcut
 
 ENTSOE_gen_hourly <- ENTSOE_gen_renewable_hourly %>% filter(Country %in% country_chosen, EnergyType==energy_chosen)
