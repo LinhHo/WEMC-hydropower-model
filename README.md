@@ -5,9 +5,9 @@ Linh Ho (09/01/2019)
 Random forest models for different purposes (starting with RF_) and supplementary functions (get*, rf*)
 Make your own DATA and FIGURE directories
 
-## MODELs
+## Models
 
-(A1) RF_hydropower_all.R : Main codes (start with this)
+### (A1) RF_hydropower_all.R : Main codes (start with this)
 
 This file contains the aggreed model for hydropower at country average level: use multiple lag time with option for on/off seasonality.
 Set the boolean variable < is.seasonal_model > for this option
@@ -33,20 +33,22 @@ To reconstruct the energy generation data from 2000-2014, the model is trained w
 
 To make the codes cleaner, all the plots were moved to a separate file < RF_plots.R >. Find ## PLOT (N) - with N is the corresponding number to the RF_plots.R file. These plots are not required to run the subsequents lines of code.
 
-(A2) RF_plots.R
+### (A2) RF_plots.R
 
 Find the corresponding number ## (N)  ## to produce the necessary plot(s).
 
 Some plots need a little tweak to meet the user's needs, e.g. font size
 In particular, plots related to coefficients may need to change to variable name to produce the required plot: corr = (Pearson) correlation, RMSE = root-mean-square error, MAE = mean absolute error, nMAE = normalised mean absolute error
 
-(A3) RF_optimal_lag.R
+### (A3) RF_optimal_lag.R
 
 The original model, rewritten from Matteo de Felice (2018) to keep the same format
 This model use input from daily data as well as optimal lag for precipitation (and snow depth)
 The coeffients are from out-of-bag estimate of Random Forest
 
 ## Supplementary functions
+
+### (B1)
 
 
 
