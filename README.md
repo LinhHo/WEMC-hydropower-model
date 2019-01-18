@@ -1,5 +1,5 @@
 # WEMC-hydropower-model
-Statistical model for hydropower using climate variables - within European Climatic Energy Mixes (ECEM) project - 
+Statistical model for hydropower using climate variables - within European Climatic Energy Mixes (ECEM) project\
 Linh Ho (09/01/2019)
 
 Random forest models for different purposes (starting with RF_) and supplementary functions (get*, rf*)
