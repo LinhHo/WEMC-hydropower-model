@@ -37,18 +37,43 @@ To make the codes cleaner, all the plots were moved to a separate file < RF_plot
 
 Find the corresponding number ## (N)  ## to produce the necessary plot(s).
 
-Some plots need a little tweak to meet the user's needs, e.g. font size
-In particular, plots related to coefficients may need to change to variable name to produce the required plot: corr = (Pearson) correlation, RMSE = root-mean-square error, MAE = mean absolute error, nMAE = normalised mean absolute error
+Some plots need a little tweak to meet the user's needs, e.g. font size, text position
+In particular, plots related to coefficients may need to change the variable name to produce the required plot: corr = (Pearson) correlation, RMSE = root-mean-square error, MAE = mean absolute error, nMAE = normalised mean absolute error
 
 ### (A3) RF_optimal_lag.R
 
 The original model, rewritten from Matteo de Felice (2018) to keep the same format
-This model use input from daily data as well as optimal lag for precipitation (and snow depth)
+
+This model uses input including daily climate variables as well as optimal lag for precipitation (and snow depth)
 The coeffients are from out-of-bag estimate of Random Forest
 
 ## Supplementary functions
 
-### (B1)
+In order of appearance in RF_hydropower_all.R
+
+### (B1) getENTSOE.R and getERA5.R
+
+Reshape the data from ENTSO-E/ERA5 into proper shape to use in the model
+
+### (B2) getLagSequences.R
+
+
+
+### (B3) getHighProductionPeriod.R
+
+Return a list of the high production period of energy generation for each country based on two criteria:
+
+- The monthly value of that month is higher than the mid-range value (average of maximum and minimum value)
+- There are at least TWO consecutive months in order to be called a high production period
+
+There will be a warning if that country has more or less than ONE high production period.
+
+Two plots of monthly average generation and the high production period of all examined countries are included.
+
+### (B4) 
+
+
+
 
 
 
