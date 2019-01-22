@@ -38,7 +38,7 @@ These plots are not required to run the subsequents lines of code.
 
 ### (A2) RF_plots.R
 
-Find the corresponding number ## (N)  ## to produce the necessary plot(s).
+Find the corresponding number ## [N]  ## to produce the necessary plot(s).
 
 Some plots need a little tweak to meet the user's needs, e.g. font size, text position.\
 In particular, plots related to coefficients may need to change the variable name to produce the required plot: corr = (Pearson) correlation, RMSE = root-mean-square error, MAE = mean absolute error, nMAE = normalised mean absolute error
@@ -57,6 +57,7 @@ In order of appearance in RF_hydropower_all.R
 ### (B1) getENTSOE.R and getERA5.R
 
 Reshape the data from ENTSO-E/ERA5 into proper shape to use in the model
+getENTSOE.R contains fragments from several codes I wrote, not completed
 
 ### (B2) getLagSequences.R
 
