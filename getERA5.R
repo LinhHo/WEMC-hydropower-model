@@ -1,5 +1,5 @@
-# Read ERA5 data for climate variables: temperature at 2m (t2m), precipitation (tp)
-# Original data in hourly 2000 - 2017
+# Read ERA5 data for climate variables: temperature at 2m (t2m), precipitation (tp), snow depth (sd), evaporation (e), etc.
+# Original data in country average, hourly
 
 rm(list=ls())
 baseDir <- "D:/WEMC/R_code/LD_RCodes_20180914" # Change to your own directory
@@ -11,7 +11,7 @@ library(zoo)
 
 ## Define variables
 country_chosen <- c("AT","CH","DE","ES","FI","FR","IT","NO","PT","RO","SI","SK")
-YEARS <- c(2000:2018)
+YEARS <- c(2000:2018) 
 
 ### ======= Climate data from ERA5 hourly data for each country ========================================
 
@@ -27,7 +27,7 @@ getERA5_hourly <- function (variable_code, PATHs) {
       } else {
         filename = paste0(PATHs, "/", cnt, '_ecmwf_era5_', ifelse(variable_code %in% c("tp","e"),'forecast','analysis'), 
                           '_S',YEAR, '01010000_E',YEAR,
-                          ifelse(YEAR==2018,'0630', '1231'), '2300_1hr_EU1_025d_', 
+                          ifelse(YEAR==2018,'0630', '1231'), '2300_1hr_EU1_025d_', # half-year data in 2018 at the moment, delete when having the complete data
                           ifelse(variable_code == "t2m", '2m', '0m'),
                           '_', variable_code, '_noc_org.csv')
       }

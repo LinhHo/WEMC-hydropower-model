@@ -7,7 +7,7 @@
 # Section 1: Model validation
 # Section 2: Model hindcast/ prediction
 
-# PLOT (N) - refer to plot numbered N in the RF_plots.R file
+# PLOT [N] - refer to plot numbered N in the RF_plots.R file
 
 
 rm(list = ls())
@@ -39,12 +39,12 @@ PATH_FIGURE <- paste0(baseDir, "FIGURE")
 
 # Define countries, energy type, options for model
 country_chosen <- c("AT","CH","DE","ES","FI","FR","IT","NO","PT","RO","SI","SK")
-energy_chosen <- "HRO"
+energy_chosen <- "HRE"
 climate_variables <- c("t2m", "tp")
 iteration_length <- 200     # Maximal length of lag time (days)
 LABEL <- "HRO 2-round"      # Title of the plots = Type of plot + LABEL
 
-is.seasonal_model <- FALSE  # TRUE if want to use the seasonal model for predicting generation
+is.seasonal_model <- TRUE  # TRUE if want to use the seasonal model for predicting generation
 #                           # FALSE if onnly use the 2-round model
 
 
@@ -67,13 +67,13 @@ df_target <-  ENTSOE_gen_new
 # Select countries in study
 df_input_sel <- df_input %>% filter(Country %in% country_chosen) 
 df_target_sel <- df_target %>% filter(Country %in% country_chosen) %>% select(Date, Country, Generation=energy_chosen) %>%
-  filter(!is.na(Generation)) # unselect countries without generation data, potentially delete also other observations withou generation data?
+  filter(!is.na(Generation)) # unselect countries without generation data
 
 # Countries in study
 country_display <- unique(df_target_sel$Country) %>% print()
 setdiff(country_chosen, country_display)     # countries without generation data
 
-## PLOT (1) - Examine the climate data
+## PLOT [1] - Examine the climate data
 
 ### ================== Get lag sequences for precipitation & temperature ====================================
 
@@ -97,8 +97,6 @@ for (cnt in country_chosen) {
   lag_df <- bind_rows(lag_df, tmp_lag)
 }
 
-## PLOT (2) - Correlation curve of climate - generation
-
 rm(df1,tmp_lag,tmp,o1)
 
 ##########################################################################################################
@@ -109,6 +107,7 @@ full_input <- df_input_sel[, c("Date", "Country")] %>%
               left_join(., lag_df, by = c("Date", "Country"))
 
 # High production periods vary between countries
+# Create in the input dataframe a new boolean variable is.highproduction 
 
 tmp2 <- data.frame()
 list_highproduction <- getHighProductionPeriod(input = df_target_sel, labs = energy_chosen)
@@ -119,6 +118,8 @@ for (cnt in country_display) {
 }
 full_input <- tmp2
 rm(tmp, tmp2)
+
+## PLOT [2] - Monthly generation and High production period 
 
 # Select common period of climate and energy dataset
 ID_START <- max(first(df_input$Date), first(df_target$Date)) %>% print()
@@ -147,6 +148,7 @@ for (cnt in country_display) {
   # Normal (non seasonal) model
   RF_nor <- RF_full_model(tmp %>% select_if(is.numeric), labs = "normal")
   
+  # Divide input to train separately 2 seasonal sub-models
   # High production period
   tmp_high <- tmp %>% filter(is.highproduction == TRUE)
   if (nrow(tmp_high)!=0) {
@@ -162,6 +164,9 @@ for (cnt in country_display) {
   plot_list[[cnt]] <- list(normal = RF_nor$plots, high = RF_high$plots, low = RF_low$plots)
   
 }
+
+## PLOT [3] - Plot variable importance for all countries
+
 rm(tmp, tmp_high, tmp_low, RF_high, RF_low, RF_nor)
 
 # Validation and comparison =============
@@ -211,8 +216,7 @@ for (cnt in country_display) {
 }
 rm(tmp, tmp_high,tmp_low,tmp2,tmp3, df_high,df_low)
 
-
-## PLOT (5) - Comparison (correlation, nMAE, MAE, RMSE) normal and seasonal models
+## PLOT [4] - Comparison (correlation, nMAE, MAE, RMSE) normal and seasonal models
 
 
 ###############################################################################################################
@@ -256,8 +260,6 @@ for (cnt in country_display) {
     plot_list[[cnt]] <- RF_nor$plots
   }
   
-  # Get OOB coefs here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  
 }
 
 # Hindcast/ predict the generation =============
@@ -296,4 +298,7 @@ for (cnt in country_display) {
   
 }
 
-## PLOT (6) - Time series of generation data estimated & observed
+## PLOT [5] - Time series of generation data estimated & observed
+
+# Compare reconstructed data from model with RTE generation data (to be continued)
+

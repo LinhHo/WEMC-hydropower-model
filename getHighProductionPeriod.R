@@ -1,6 +1,8 @@
 # Define the high production period of hydropower generation for each country
 # based on the mid-range value of avarage monthly generation
 # Choose only period with at least two months
+# Linh Ho (09/01/2019)
+
 # Input structure: dataframe(Date, Country, Generation)
 
 getHighProductionPeriod <- function (input, labs = "") {
@@ -38,7 +40,7 @@ getHighProductionPeriod <- function (input, labs = "") {
     bb <- data.frame(roll_diff = rollapply(a$is.higher, width = 3, FUN = mean, fill = NA, align = 'center')) %>% na.omit()
     avg <- bind_cols(aa, bb)
     df_avg <- bind_rows(df_avg, avg)
-    highproduction[[cnt]] <- (avg$Month[which(avg$roll_diff >= 2/3)]) # at least two consecutive months with larger generation compared to the threshold
+    highproduction[[cnt]] <- (avg$Month[which(avg$roll_diff >= 2/3)]) # at least two consecutive months with generation > threshold
     
   }
   

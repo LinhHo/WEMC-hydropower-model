@@ -20,7 +20,7 @@ rf_model <- function(LABEL = '',
   f_rf = randomForest::randomForest(target ~ ., data = all_data, ntree = ntrees, nodesize = node_size)
   
   ## Model coefficients ------
-  RF_cor  = cor(f_rf$predicted, f_rf$y)
+  RF_cor  = cor(f_rf$predicted, f_rf$y) # Pearson correlation
   RF_rmse = sqrt(mean((f_rf$predicted - f_rf$y)^2))  # root mean square error
   RF_mae  = mean(abs(f_rf$predicted - f_rf$y)) # mean absolute error
   RF_nmae  = 100 * mean(abs((f_rf$predicted - f_rf$y) / f_rf$y)) # normalised mean absolute error

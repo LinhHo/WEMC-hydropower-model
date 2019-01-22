@@ -1,7 +1,10 @@
-### Function of full RF model ###
+### Function of full RF model with 2 rounds ###
+# Linh Ho (09/01/2019)
+
 RF_full_model <- function (input, labs = "") {
   tmp <- input %>% na.omit()
   rf_OOB <- data.frame()
+  
   ## RF preliminary round: bootstrapping --------------
   rf_pre <- rf_model(target = tmp %>% pull(Generation),
                      inputs = tmp %>% select_if(is.numeric) %>% select(-Generation),
@@ -9,7 +12,7 @@ RF_full_model <- function (input, labs = "") {
   vimp <- getImportantLags(model_explain = rf_pre$importance, variable_list = climate_variables, range = 30)
   var_main <- c("Date", "Country", "Generation", vimp$lags_chosen) %>% as.character()
   
-  ## RF main round -----------------------   
+  ## RF main round ------------------------------------ 
   tmp_main <- input[, which(colnames(input) %in% var_main)]  %>% na.omit()
   rf <- rf_model(target = tmp_main %>% pull(Generation),
                  inputs = tmp_main %>% select_if(is.numeric) %>% select(-Generation), 
@@ -23,7 +26,8 @@ RF_full_model <- function (input, labs = "") {
   rf_varimp = plot(rf$importance) + theme(legend.position="none")
   top_3_variables = rf$importance %>% filter(!(variable %in% c("_baseline_", "_full_model_"))) %>% top_n(3, dropout_loss) %>%
     arrange(-dropout_loss) %>%  pull(variable) %>% as.character()
-  # Partial dependence plots
+  
+  # Partial dependence plots of the top 3 important variables
   rf_1 = plot(single_variable(rf$explain, top_3_variables[1], type = 'pdp'))+ theme(legend.position="none")
   if (!is.na(top_3_variables[2])) {
     rf_2 = plot(single_variable(rf$explain, top_3_variables[2], type = 'pdp'))+ theme(legend.position="none")

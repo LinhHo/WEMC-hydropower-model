@@ -1,26 +1,29 @@
+# This is an incomplete file, only gather some of the codes I Used to read energy data from ENTSO-E
+# Generation_all_2015_2018.rda should contain all necessary energy data for the model
+
 ### -------- Generation hydropower data from ENTSO-E ------------------------------------------------------
 
-# load(file.path(PATH_OUTPUT, 'ENTSOE_CFR_daily_NGCpaper_2015_2017.rda'))
 load(file.path(PATH_OUTPUT, 'Generation_all_2015_2018_test.rda')) # Generation data
 
 ENTSOE_sel <- ENTSOE_gen_new %>% filter(between(as.Date(Date),ID_START, ID_END)) %>%
   select(Date, Country, Generation=energy_chosen)
 
-# load(file.path(PATH_OUTPUT, 'ENTSOE_CFR_daily_constNGC_2015_2017.rda')) # CFR with constant value of NGC
-# 
-# ENTSOE_sel <- data.frame()
-# for (cnt in country_chosen) {
-# 
-#     tmp <- ENTSOE_CFR %>% filter(Country == cnt) %>%
-#                   filter(between(as.Date(Date), as.Date(ID_START),as.Date(ID_END)))%>%
-#                   mutate(Country=cnt) %>%
-#                   select(Date, Country, type_chosen)
-#     ENTSOE_sel <- bind_rows(ENTSOE_sel, tmp)
-# }
+load(file.path(PATH_OUTPUT, 'ENTSOE_CFR_daily_constNGC_2015_2017.rda')) # CFR with constant value of NGC
+
+ENTSOE_sel <- data.frame()
+for (cnt in country_chosen) {
+
+    tmp <- ENTSOE_CFR %>% filter(Country == cnt) %>%
+                  filter(between(as.Date(Date), as.Date(ID_START),as.Date(ID_END)))%>%
+                  mutate(Country=cnt) %>%
+                  select(Date, Country, type_chosen)
+    ENTSOE_sel <- bind_rows(ENTSOE_sel, tmp)
+}
 
 ## Get Generation data hourly from ENTSOE for renewable energy ------
 
-load(file.path(PATH_OUTPUT, 'ENTSOE_generation_hourly_2015_2018.rda'))
+# load(file.path(PATH_OUTPUT, 'ENTSOE_generation_hourly_2015_2018.rda'))
+
 ENTSOE_gen_renewable_hourly <- ENTSOE_generation_hourly %>%
   mutate(EnergyType=ProductionType ) %>%
   mutate(TS=as.POSIXct(paste(Date,Time), tz="", format="%Y-%m-%d %H:%M:%OS")) %>%

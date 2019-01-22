@@ -98,18 +98,13 @@ country_display <- unique(TP_df$Country) %>% print()
 setdiff(country_chosen, country_display)     # countries cannot calculate optimal lag
 
 rm(df_tp,o,df,tmp)
-plot_corr <- plot_corr %>% mutate(group = "ERA5")
-plot_max <- plot_max %>% mutate(group = "ERA5")
+plot_corr <- plot_corr_tp
+plot_max <- plot_max_tp
 
-PLOT_CORR <- bind_rows(PLOT_CORR, plot_corr)
-PLOT_MAX <- bind_rows(PLOT_MAX, plot_max)
-
-ggplot(PLOT_CORR, aes(x = Days, y = corr_lag, group=group)) +
-  geom_point(alpha = 0.3, aes(colour=group)) +
-  geom_text(data = PLOT_MAX %>% filter(group=="ERA5"), aes(x=-Inf,y=Inf, label= paste("ERA5", optimal_lag), colour = group, 
-                                hjust = -0.01, vjust = 14)) +
-  geom_text(data = PLOT_MAX %>% filter(group=="INTERIM"), aes(x=-Inf,y=Inf, label= paste("INTR", optimal_lag), colour = group, 
-                                 hjust = -0.01, vjust = 16)) +
+ggplot(plot_corr, aes(x = Days, y = corr_lag)) +
+  geom_point(alpha = 0.3) +
+  geom_text(data = plot_max, aes(x=-Inf,y=Inf, label= paste("Optimal lag = ", optimal_lag), 
+                                 hjust = -0.01, vjust = 14)) +
   facet_wrap(~Country, nrow = 3) +
   ggtitle(paste(energy_chosen)) +
   theme_grey(base_size = 14) + xlab("Cumulative days") + ylab("Correlation")
@@ -119,8 +114,8 @@ ggplot(PLOT_CORR, aes(x = Days, y = corr_lag, group=group)) +
 
 # Prepare predictors
 full_df <- df_sel %>% filter(Country %in% country_display) %>% select(Date, Country, t2m, tp, sd, Generation) %>%
-  left_join(., TP_df, by = c("Date", "Country")) %>% left_join(.,SD_df, by = c("Date", "Country"))
-# %>%   left_join(., SD_df, by = c("Date", "Country"))
+  left_join(., TP_df, by = c("Date", "Country")) %>% left_join(.,SD_df, by = c("Date", "Country")) %>%  
+  left_join(., SD_df, by = c("Date", "Country"))
 
 # Use OOB error, no validation period
 
@@ -138,9 +133,6 @@ for (cnt in country_display) {
 }
 is.na(RF_OOB) <- do.call(cbind,lapply(RF_OOB, is.infinite)) # assign NA to Inf value(s)
 
-HRE_optSD <- RF_OOB %>% mutate(model = "OptSD")
-HRE_OOB <- bind_rows(HRE_opt, HRE_optSD)
-
 ## ====================== Some plots =============================================================================
 
 # Plotting RF model's Out-of-bag coefficients
@@ -154,6 +146,10 @@ ggplot(data.m, aes(x=Country, y=value)) +
   ggtitle(paste("OOB coefficients for", energy_chosen, LABEL))
 
 # Compare Coefficients of Optimal lag model between ERA INTERIM and ERA5
+# Run twice, adjust the RF_OOB accordingly to compare
+HRE_optSD <- RF_OOB %>% mutate(model = "OptSD")
+HRE_OOB <- bind_rows(HRE_opt, HRE_optSD)
+
 data.m2 <- melt(HRE_OOB, id.vars = c('Country', 'model'))
 ggplot(data.m2, aes(x = Country, y = value, fill = model)) +
   geom_bar(stat = "identity", position = "dodge") +

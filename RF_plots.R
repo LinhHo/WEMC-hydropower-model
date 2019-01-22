@@ -2,23 +2,17 @@
 # Produce figures stored in the baseDir/FIGURE directory
 # Numbered according to the main code RF_hydropower_all.R
 
-## (1) ## Examine the CLIMATE data - daily temperature and precipitation by country
+## [1] ## Examine the CLIMATE data - daily temperature and precipitation by country
+## It's not a good practice to plot two different variables with different unit in a same plot,
+## but it's just easier to see and compare, so bear with me
 
-ggplot(df_sel, aes(x=Date)) + 
+ggplot(df_input_sel, aes(x=Date)) + 
   geom_line(aes(y = t2m), colour = "red") + labs(title = "Daily temperature and precipitation", y = "") +
   geom_line(aes(y = tp), colour = "steelblue") +
   facet_wrap(~Country, scales = "free") + theme_grey(base_size = 18)
 
-## (2) ## Curves of CORRELATION between lag time for climate variable and hydropower generation
 
-ggplot(lag_TP$series, aes(x = Cumulative_days, y = Correlation)) +
-  geom_point(alpha = 0.7) +
-  facet_wrap(~Country, nrow = 3, scales = "free") +
-  geom_text(data = lag_TP$max, aes(x=-Inf,y=Inf, label= paste("Optimal lag =", lag_chosen), hjust = -0.3, vjust = 14))  +
-  ggtitle(paste("Optimal cumulative precipitation for", energy_chosen, "ERA Interim")) +
-  theme_grey(base_size = 18)
-
-## (3)  ## High production period vary between countries
+## [2]  ## High production period vary between countries
 
 ## Monthly generation data
 list_highproduction$plot_monthly_generation
@@ -28,9 +22,9 @@ list_highproduction$plot_highproduction
 ##############################################################################################################
 ### ======  RANDOM FOREST MODEL  ===============================
 
-## (4) ## Plot variable importance for all countries -----------
+## [3] ## Plot variable importance for all countries -----------
 for (cnt in country_display) {
-  plot_file <- paste(baseDir,"FIGURE/HRO_Variable_importance_",cnt,".png",sep="")
+  plot_file <- paste(baseDir,"FIGURE/HRE_Variable_importance_",cnt,".png",sep="")
   png(plot_file, width=32, height=16, units="cm", res=300)
   do.call(grid.arrange, c(plot_list[[cnt]][1:3], ncol = 1))
   dev.off()
@@ -38,11 +32,11 @@ for (cnt in country_display) {
 
 ## Section (1) - Model validation
 
-## (5) ## Comparison between normal 2-round and seasonal models
+## [4] ## Comparison between normal 2-round and seasonal models
 a <- RF_normal_coef %>% mutate(model = "2-round", valid = 2017)
 b <- RF_seasonal_coef %>% mutate(model = "seasonal", valid = 2017)
-HRO_coef <- bind_rows(a,b)
-df <- bind_rows(df, HRE_coef)
+HRE_coef <- bind_rows(a,b)
+df <- bind_rows(df, HRE_coef) # store and rerun if has more than ONE year
 is.na(df) <- do.call(cbind,lapply(df, is.infinite)) # assign NA to Inf value(s)
 df$valid <- as.factor(df$valid)
 
@@ -59,7 +53,7 @@ ggplot(tmp, aes(x = valid, y = corr, fill = model)) + # similarly, change y
 
 ## Section (2) - Model hindcast/ prediction
 
-## (6) ##
+## [5] ##
 # Time series of generation data estimated & observed
 
 df_target_sel <- df_target_sel %>% mutate(Data = "observed")
@@ -72,7 +66,7 @@ ggplot(full_df) + geom_line(aes(x=Date, y=Generation, colour = Data)) +
   theme(legend.position = "bottom")
 
 
-## (7) ##
+## [6] ##
 
 # Compare with RTE data hydropower generation for France (to be continued)
 # QQplot estimated vs observed values
