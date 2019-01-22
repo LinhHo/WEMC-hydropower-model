@@ -1,11 +1,12 @@
 # WEMC-hydropower-model
 Statistical model for hydropower using climate variables - within European Climatic Energy Mixes (ECEM) project\
-Linh Ho (09/01/2019)
+World Energy & Meteorology Council (WEMC) - Linh Ho (09/01/2019)
 
 Random forest models for different purposes (starting with RF_) and supplementary functions (get*, rf*)\
 Make your own DATA and FIGURE directories
+Necessary dataset are provided in the DATA folder, while FIGURE gives some plot examples I made
 
-## Models
+## Models 
 
 ### (A1) RF_hydropower_all.R : Main codes (start with this)
 
