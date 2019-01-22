@@ -3,7 +3,7 @@ Statistical model for hydropower using climate variables - within European Clima
 World Energy & Meteorology Council (WEMC) - Linh Ho (09/01/2019)
 
 Random forest models for different purposes (starting with RF_) and supplementary functions (get*, rf*)\
-Make your own DATA and FIGURE directories
+Make your own DATA and FIGURE directories\
 Necessary dataset are provided in the DATA folder, while FIGURE gives some plot examples I made
 
 ## Models 
@@ -57,7 +57,7 @@ In order of appearance in RF_hydropower_all.R
 
 ### (B1) getENTSOE.R and getERA5.R
 
-Reshape the data from ENTSO-E/ERA5 into proper shape to use in the model
+Reshape the data from ENTSO-E/ERA5 into proper shape to use in the model\
 getENTSOE.R contains fragments from several codes I wrote, not completed
 
 ### (B2) getLagSequences.R
