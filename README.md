@@ -4,16 +4,16 @@ World Energy & Meteorology Council (WEMC) - Linh Ho (09/01/2019)
 
 Random forest models for different purposes (starting with RF_) and supplementary functions (get*, rf*)\
 Make your own DATA and FIGURE directories\
-Necessary dataset are provided in the DATA folder, while FIGURE gives some plot examples I made
+Necessary dataset are provided in the DATA folder, while FIGURE gives some examples of the plots I made
 
 ## Models 
 
 ### (A1) RF_hydropower_all.R : Main codes (start with this)
 
-This file contains the aggreed model for hydropower at country average level: use multiple lag time with option for on/off seasonality.\
-Set the boolean variable < is.seasonal_model > for this option
+This script contains the aggreed model for hydropower at country average level: use multiple lag times with an option for on/off seasonality.\
+Set the boolean variable < is.seasonal_model <- TRUE/FALSE> for this option
 
-It allows user to define: countries to examine, type of hydropower (HRO or HRE), climate variables in use (must be the same as the name code from ECMWF, e.g. t2m for temperature, tp for precipitation, sd for snow depth, etc.)\
+It allows users to define: countries to examine (European country code), type of hydropower (HRO or HRE), climate variables in use (must be the same as the name code from ECMWF, e.g. t2m for temperature, tp for precipitation, sd for snow depth, etc.)\
 Other options such as validating period, estimating period can also be specified before running the model (## =======)
 
 Note that in this code, I use a general term "estimate" to refer both hindcast for reconstruction as well as predict for seasonal forecast and climate projection
@@ -21,28 +21,36 @@ Note that in this code, I use a general term "estimate" to refer both hindcast f
 Main parts:
 
 - Define necessary variables
-- Calculate multiple lag for climate variables
-- Prepare input for the random forest model
+- Calculate multiple lags for climate variables
+- Prepare input for the random forest model, assign high/low production period
 - Validate the model using an indepedent dataset of energy
 - Estimate (hindcast/predict) the energy generation using the model trained from available dataset
 
-The first three steps are compulsory while the 4th and 5th are indepedent and not necessary to run one before the other.
+The first three steps are compulsory while the 4th and 5th steps are indepedent and not necessarily to be run one before the other.
 
 For example, the climate data ERA5 available from 2000-2017, the energy data ENTSO-E available from 2015, thus the common period is 2015-2017.\
-To validate the model, the validate period is set in the year 2016, e.g. < validate_START is 2016-01-01 > and < validate_END is 2016-12-31 >. The model is trained with the remaining dataset, i.e. 2015 and 2017. Next, the climate data of 2016 will be the input of this model to produce the output - estimated generation for 2016. Finally, the output is then compared with the 2016 generation from ENTSOE data, calculate correlation, RMSE, etc. to produce the validation result.\
-Note that these validation coefficietns would normally be lower than the out-of-bag estimate error.\
-To reconstruct the energy generation data from 2000-2014, the model is trained with the whole common period 2015-2017, then with the climate input 2000-2014, this model will estimate the generation in this period. These output are the reconstruction for energy data in the period 2000-2014.
+
+#### Section (1)
+To validate the model, the validate period is set in the year 2016, e.g. < validate_START <- "2016-01-01" > and < validate_END <- "2016-12-31" >. The model is trained with the remaining dataset, i.e. 2015 and 2017. Next, the climate data of 2016 will be the input of this model to produce the output - estimated generation for 2016. Finally, the output is then compared with the 2016 generation from ENTSOE data, calculate the correlation, RMSE, etc. to produce the validation result.\
+Note that these validation coefficietns would normally be lower than the out-of-bag estimate error as this is a very strict assessment.\
+
+#### Section (2)
+To reconstruct the energy generation data in 2000-2014, the model is trained with the whole common period 2015-2017, then with the climate input 2000-2014, this trained model will estimate the generation in this period. The output are the reconstructed energy data in the period 2000-2014.
+
+Note that the first 200 days of the period are not taken into account in the model, since they involve in lag time calculation. Therefore, the first year in study actually starts on the 20th July in this case.
 
 To make the codes cleaner, all the plots were moved to a separate file < RF_plots.R >.\
 Find ## PLOT (N) - with N is the corresponding number to the RF_plots.R file.\
-These plots are not required to run the subsequents lines of code.
+These plots are not required to run the subsequent lines of code.
 
 ### (A2) RF_plots.R
 
 Find the corresponding number ## [N]  ## to produce the necessary plot(s).
 
-Some plots need a little tweak to meet the user's needs, e.g. font size, text position.\
+Some plots need a little tweak to meet the users' needs, e.g. font size, text position.\
 In particular, plots related to coefficients may need to change the variable name to produce the required plot: corr = (Pearson) correlation, RMSE = root-mean-square error, MAE = mean absolute error, nMAE = normalised mean absolute error
+
+Plot to compare between two datasets, two periods, two methods, etc. need to store the value in one temporary variable before running the second time, then combine these two results, typically with < bind_rows > function.
 
 ### (A3) RF_optimal_lag.R
 
@@ -58,7 +66,7 @@ In order of appearance in RF_hydropower_all.R
 ### (B1) getENTSOE.R and getERA5.R
 
 Reshape the data from ENTSO-E/ERA5 into proper shape to use in the model\
-getENTSOE.R contains fragments from several codes I wrote, not completed
+getENTSOE.R contains fragments from several codes I wrote, not complete
 
 ### (B2) getLagSequences.R
 
@@ -110,10 +118,10 @@ The original random forest from R package, with more detailed returned results s
 
 ### (C2) rf_full_model.R
 
-TWO round random forest model where:
+TWO-step random forest model where:
 
-- First round (preliminary): model with all lag time as the input, then use getImportantLags.R to select the most important lag sequences
-- Second round (main): run a random forest model again but with input are only the above important lags. Save this model for further use
+- First step (preliminary): model with all lag time as the input, then use getImportantLags.R to select the most important lag sequences
+- Second step (main): run a random forest model again but the input are only the above important lags. Save this model for further use
 
 The out-of-bag error and important variable plots are also included.
 
